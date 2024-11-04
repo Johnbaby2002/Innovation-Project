@@ -1,0 +1,37 @@
+# Start with the official NixOS base image
+FROM nixos/nix:latest
+
+# Set shell to bash
+SHELL [ "/bin/bash", "-c" ]
+
+# Install basic system packages using nix-env
+RUN nix-env -iA \
+    nixpkgs.bash \
+    nixpkgs.coreutils \
+    nixpkgs.curl \
+    nixpkgs.vim
+
+# Create a working directory
+WORKDIR /app
+
+# Create a default.nix file for package management
+COPY <<EOF default.nix
+with import <nixpkgs> {};
+mkShell {
+  buildInputs = [
+    # Add your required packages here
+    python3
+    nodejs
+    git
+  ];
+}
+EOF
+
+# Set up the shell environment
+SHELL ["/bin/bash", "-c"]
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PATH=/root/.nix-profile/bin:$PATH
+
+# Start with bash by default
+CMD ["bash"]

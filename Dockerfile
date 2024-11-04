@@ -7,15 +7,17 @@ RUN nix-env -iA \
     nixpkgs.curl \
     nixpkgs.sudo \
     nixpkgs.bash \
-    nixpkgs.coreutils
+    nixpkgs.coreutils \
+    nixpkgs.which
 
 # Setup Nix configuration
 RUN mkdir -p /etc/nix && \
     echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
 
-# Setup working directory
-WORKDIR /app
+# Create a non-root user for Homebrew
+RUN useradd -m -s /bin/bash linuxbrew && \
+    echo "linuxbrew ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install devenv using nix profile
-RUN . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && \
-    nix profile install --accept-flake-config github:cachix/devenv
+# Switch to the non-root user
+USER linuxbrew
+WORKDIR /home/linuxbrew

@@ -1,5 +1,5 @@
 # Start with the official NixOS base image
-FROM nixos/nix:latest
+from nixos/nix:latest
 
 # Set shell to bash
 SHELL [ "/bin/bash", "-c" ]
